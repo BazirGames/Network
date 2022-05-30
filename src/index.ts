@@ -1,4 +1,12 @@
 import { BazirRemote, BazirRemoteContainer } from "@bazir/remote";
+import type { RemoteParent } from "@bazir/remote";
+const RunService = game.GetService("RunService");
+const isServer = RunService.IsServer();
+function async<T extends Callback>(f: T): T {
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
+	return Promise.promisify(f);
+}
 const enum NetworkSettings {
 	Name = "_Network_",
 	Event = "_Event_",
@@ -124,9 +132,9 @@ export class ClientNetwork {
 		assert(!isServer, "Cannot create client network on server");
 		this.RemoteContainer = new BazirRemoteContainer(name, [], parent);
 
-		const EventRemote = this.RemoteContainer.waitfor(`${NetworkSettings.Event}`, Settings.Clienttimeout);
+		const EventRemote = this.RemoteContainer.waitfor(`${NetworkSettings.Event}`);
 		assert(EventRemote, "remote event not found");
-		const FunctionRemote = this.RemoteContainer.waitfor(`${NetworkSettings.Function}`, Settings.Clienttimeout);
+		const FunctionRemote = this.RemoteContainer.waitfor(`${NetworkSettings.Function}`);
 		assert(FunctionRemote, "remote function not found");
 
 		EventRemote.ChildAdded.Connect((child) => {
