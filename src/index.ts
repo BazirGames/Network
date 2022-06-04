@@ -16,9 +16,17 @@ type ServerEventsFunction = (player: Player, ...args: unknown[]) => unknown;
 type ClientEventsFunction = (...args: unknown[]) => unknown;
 export class ServerNetwork {
 	private RemoteContainer: BazirRemoteContainer;
-	Invoke<T>(key: string, player: Player, ...args: unknown[]): Promise<T> {
+	Invoke<T>(key: string, player: Player, ...args: unknown[]) {
 		assert(typeOf(key) === "string", "key must be string");
 		return this.RemoteContainer.get(`${NetworkSettings.Function}`)!.InvokeClient<T>(player, `${key}`, ...args);
+	}
+	Invokes<T>(key: string, player: Player[], ...args: unknown[]) {
+		assert(typeOf(key) === "string", "key must be string");
+		return this.RemoteContainer.get(`${NetworkSettings.Function}`)!.InvokeClients<T>(player, `${key}`, ...args);
+	}
+	InvokeAll<T>(key: string, ...args: unknown[]): Promise<T[]> {
+		assert(typeOf(key) === "string", "key must be string");
+		return this.RemoteContainer.get(`${NetworkSettings.Function}`)!.InvokeAllClients<T>(`${key}`, ...args);
 	}
 	Fire(key: string, player: Player | Player[], ...args: unknown[]) {
 		assert(typeOf(key) === "string", "key must be string");
